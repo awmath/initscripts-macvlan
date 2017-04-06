@@ -35,10 +35,17 @@ if [ ! -x ${OTHERSCRIPT} ]; then
 	OTHERSCRIPT="/etc/sysconfig/network-scripts/ifup-eth"
 fi
 
-ip link add \
-	link ${MACVLAN_PARENT} \
-	name ${DEVICE} \
-	type ${TYPE:-macvlan} mode ${MACVLAN_MODE:-private}
-
+if [ -z ${MACVLAN_HWADDR} ]; then
+	ip link add \
+		link ${MACVLAN_PARENT} \
+		name ${DEVICE} \
+		type ${TYPE:-macvlan} mode ${MACVLAN_MODE:-private}
+else
+	ip link add \
+                link ${MACVLAN_PARENT} \
+		address ${MACVLAN_HWADDR} \
+                name ${DEVICE} \
+                type ${TYPE:-macvlan} mode ${MACVLAN_MODE:-private}
+fi
 ${OTHERSCRIPT} ${CONFIG}
 
